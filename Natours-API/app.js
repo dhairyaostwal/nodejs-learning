@@ -12,7 +12,7 @@ const reviews = JSON.parse(
     fs.readFileSync('./dev-data/data/reviews.json')
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
     res.status(200).json({
         status: 'success',
         result: tours.length,
@@ -20,10 +20,27 @@ app.get('/api/v1/tours', (req, res) => {
             tours: tours
         }
     })
-})
+}
 
-app.post('/api/v1/tours', (req, res) => {
-    // console.log(req.body);
+const getTour = (req, res) => {
+    const id = req.params.id;
+    const tour = tours.find(el => el.id == id);
+
+    if (!tour) {
+        return res.status(404).json({
+            status: 'failure',
+            message: 'Invalid ID'
+        })
+    }
+    res.status(200).json({
+        status: 'success',
+        data: {
+            tours: tour
+        }
+    })
+}
+
+const postTour = (req, res) => {
     const newID = tours[tours.length - 1].id + 1;
     const newTour = Object.assign({ id: newID }, req.body);
     tours.push(newTour);
@@ -35,7 +52,51 @@ app.post('/api/v1/tours', (req, res) => {
             }
         });
     })
-})
+}
+
+const updateTour = (req, res) => {
+    if (req.params.id * 1 > tours.length) {
+        return res.status(404).json({
+            status: 'failure',
+            message: 'Invalid ID'
+        });
+    }
+    res.status(200)
+        .json({
+            status: 'success',
+            data: {
+                tour: '<Updated tour here...>'
+            }
+        })
+}
+
+const deleteTour = (req, res) => {
+    if (req.params.id * 1 > tours.length) {
+        return res.status(404).json({
+            status: 'failure',
+            message: 'Invalid ID'
+        });
+    }
+    res.status(204).json({
+        status: 'success',
+        data: null
+    })
+}
+
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', postTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours')
+    .get(getAllTours)
+    .post(postTour)
+
+app.route('/api/v1/tours/:id')
+    .get(getTour)
+    .patch(updateTour)
+    .delete(deleteTour)
 
 app.get('/api/v1/reviews', (req, res) => {
     res.status(200).json({

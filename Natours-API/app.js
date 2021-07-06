@@ -1,9 +1,24 @@
 const express = require('express')
 const fs = require('fs')
-const bodyParser = require('body-parser')
+const morgan = require('morgan')
 const app = express()
+
+// 1. MIDDLEWARES
+
+app.use(morgan('dev'));
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
+// middleware will execute only for route below
+app.use((req, res, next) => {
+    console.log("Hello from middleware 🚀");
+    next();
+})
+
+// middleware only for getAllTours()
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    next();
+})
 
 const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
@@ -12,9 +27,13 @@ const reviews = JSON.parse(
     fs.readFileSync('./dev-data/data/reviews.json')
 );
 
+// 2. ROUTE HANDLERS
+
 const getAllTours = (req, res) => {
+    console.log(req.requestTime)
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         result: tours.length,
         data: {
             tours: tours
@@ -89,6 +108,8 @@ const deleteTour = (req, res) => {
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
 
+// 3. ROUTES
+
 app.route('/api/v1/tours')
     .get(getAllTours)
     .post(postTour)
@@ -121,6 +142,8 @@ app.post('/api/v1/reviews', (req, res) => {
         });
     })
 })
+
+// 4. START SERVER
 
 app.listen(3000, () => {
     console.log("Listening on port 3000...")

@@ -47,6 +47,20 @@ app.get('/api/v1/reviews', (req, res) => {
     })
 })
 
+app.post('/api/v1/reviews', (req, res) => {
+    const newID = reviews[reviews.length - 1].id + 1;
+    const newReview = Object.assign({ id: newID }, req.body);
+    reviews.push(newReview);
+    fs.writeFile('./dev-data/data/reviews.json', JSON.stringify(reviews), err => {
+        res.status(201).json({
+            status: 'success',
+            data: {
+                review: newReview
+            }
+        });
+    })
+})
+
 app.listen(3000, () => {
     console.log("Listening on port 3000...")
 })

@@ -23,27 +23,10 @@ app.use((req, res, next) => {
     next();
 })
 
-// 2. ROUTE HANDLERS
-
-// app.get('/api/v1/tours', getAllTours);
-// app.get('/api/v1/tours/:id', getTour);
-// app.post('/api/v1/tours', postTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
-
-// 3. ROUTES
+// 2. ROUTES
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
-// app.route('/api/v1/users/:id')
-//     .get(getUser)
-//     .patch(updateUser)
-//     .delete(deleteUser)
-
-// 4. START SERVER
-
-app.listen(3000, () => {
-    console.log("Listening on port 3000...")
-})
+module.exports = app;
